@@ -1,1 +1,2 @@
 Numero de documentos del corpus: 20000
+Numero de palabras del corpus: 393195

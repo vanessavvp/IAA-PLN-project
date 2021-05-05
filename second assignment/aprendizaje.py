@@ -18,6 +18,10 @@ from nltk.tokenize import word_tokenize
 
 
 class_b, class_c, class_e, class_h = {}, {}, {}, {}
+total_class_b = 0
+total_class_c = 0
+total_class_e = 0
+total_class_h = 0
 
 def reading_file(input_file):
   with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
@@ -52,16 +56,19 @@ def initialize_dictionaries(lines):
           class_b[word] += 1
         else:
           class_b[word] = 1
-      if (lines[i][0] == 'Clothing & Accesories'):
+
+      if (lines[i][0] == 'Clothing & Accessories'):
         if (word in class_c):
           class_c[word] += 1
         else:
           class_c[word] = 1
+
       if (lines[i][0] == 'Electronics'):
         if (word in class_e):
           class_e[word] += 1
         else:
           class_e[word] = 1
+
       if (lines[i][0] == 'Household'):
         if (word in class_h):
           class_h[word] += 1
@@ -71,29 +78,49 @@ def initialize_dictionaries(lines):
   
 def corpus_documents_number(lines):
   text = 'Numero de documentos del corpus: ' + str(len(lines)) + '\n'
-  writing_file('aprendizajeH.txt', text)
   writing_file('aprendizajeB.txt', text)
   writing_file('aprendizajeC.txt', text)
   writing_file('aprendizajeE.txt', text)
+  writing_file('aprendizajeH.txt', text)
+  
+  
+
+def corpus_words_number():
+  text = 'Numero de palabras del corpus: ';
+  total_class_b = sum(class_b.values()) 
+  total_class_c = sum(class_c.values())
+  total_class_e = sum(class_e.values())
+  total_class_h = sum(class_h.values())
+  writing_file('aprendizajeB.txt', text + str(total_class_b))
+  writing_file('aprendizajeC.txt', text + str(total_class_c))
+  writing_file('aprendizajeE.txt', text + str(total_class_e))
+  writing_file('aprendizajeH.txt', text + str(total_class_h))
 
 
-def corpus_words_number(file_name):
-  print('hola')
-  # data = read_and_tokenize(file_name)
-  # preprocessing_words(data)
 
 def writing_file(file_name, text):
-  new_file = open(file_name,"wt")
+  new_file = open(file_name,"at")
   new_file.write(text)
   print("\nThe file was successfully written! into \"" + file_name + "\" file")
 
 
+def delete_file_content(file_name):
+  file = open(file_name, 'r+')
+  file.truncate(0)
+  file.close()
+
+
 def main():
+  delete_file_content('aprendizajeB.txt')
+  delete_file_content('aprendizajeC.txt')
+  delete_file_content('aprendizajeE.txt')
+  delete_file_content('aprendizajeH.txt')
   file = 'ecom-train.csv'
   lines = reading_file(file)
   corpus_documents_number(lines)
   initialize_dictionaries(lines)
-  #corpus_words_number(file)
+  corpus_words_number()
+
   
 
 main()
