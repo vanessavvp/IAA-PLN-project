@@ -46,8 +46,8 @@ def preprocessing_words(entire_line):
       # Stopwords will be ignored
       if (word not in en_stops):
         output_list.add(word)
-  output_list = sorted(output_list)
-  return output_list
+  output = sorted(output_list)
+  return output
 
 
 def initialize_dictionaries(lines):
@@ -109,26 +109,29 @@ def frequency_and_log_prob(voc_size):
   text = '\nPalabra: '
   text2 = ' Frec: '
   text3 = ' LogProb: '
-  for key in class_b:
+  for key in sorted(class_b):
     word = str(key)
     frec = class_b[key]
     log = math.log((frec + 1) / (len(class_b) + voc_size))
     writing_file('aprendizajeB.txt', text + word + text2 + str(frec) + text3 + str(log))
 
-  for key in class_c:
+  for key in sorted(class_c):
     word = str(key)
     frec = class_c[key]
-    writing_file('aprendizajeC.txt', text + word + text2 + str(frec))
+    log = math.log((frec + 1) / (len(class_c) + voc_size))
+    writing_file('aprendizajeC.txt', text + word + text2 + str(frec) + text3 + str(log))
 
-  for key in class_e:
+  for key in sorted(class_e):
     word = str(key)
     frec = class_e[key]
-    writing_file('aprendizajeE.txt', text + word + text2 + str(frec))
+    log = math.log((frec + 1) / (len(class_e) + voc_size))
+    writing_file('aprendizajeE.txt', text + word + text2 + str(frec) + text3 + str(log))
 
-  for key in class_h:
+  for key in sorted(class_h):
     word = str(key)
     frec = class_h[key]
-    writing_file('aprendizajeH.txt', text + word + text2 + str(frec))
+    log = math.log((frec + 1) / (len(class_h) + voc_size))
+    writing_file('aprendizajeH.txt', text + word + text2 + str(frec) + text3 + str(log))
 
 
 def writing_file(file_name, text):
@@ -147,7 +150,6 @@ def read_vocabulary_file(file_name):
   new_file = open(file_name,"r")
   words = (new_file.readline()).split()
   vocabulary_size = int(words[3])
-  print(vocabulary_size)
   new_file.close()
   frequency_and_log_prob(vocabulary_size)
 
