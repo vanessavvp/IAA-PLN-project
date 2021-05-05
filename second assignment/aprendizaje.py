@@ -105,6 +105,21 @@ def frequency_and_log_prob():
     frec = class_b[key]
     writing_file('aprendizajeB.txt', text + word + text2 + str(frec))
 
+  for key in class_c:
+    word = str(key)
+    frec = class_c[key]
+    writing_file('aprendizajeC.txt', text + word + text2 + str(frec))
+
+  for key in class_e:
+    word = str(key)
+    frec = class_e[key]
+    writing_file('aprendizajeE.txt', text + word + text2 + str(frec))
+
+  for key in class_h:
+    word = str(key)
+    frec = class_h[key]
+    writing_file('aprendizajeH.txt', text + word + text2 + str(frec))
+
 
 def writing_file(file_name, text):
   new_file = open(file_name,"at")
