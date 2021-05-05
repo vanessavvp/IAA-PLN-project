@@ -7,6 +7,7 @@ Natural language processing project PLN 2º part
 """
 import re
 import csv
+import math
 import nltk
 import string
 
@@ -18,6 +19,7 @@ from nltk.tokenize import word_tokenize
 
 
 class_b, class_c, class_e, class_h = {}, {}, {}, {}
+vocabulary_size = 0
 total_class_b = 0
 total_class_c = 0
 total_class_e = 0
@@ -50,27 +52,33 @@ def preprocessing_words(entire_line):
 
 def initialize_dictionaries(lines):
   for i in range(len(lines)):
-    words = preprocessing_words(lines[i][1])
-    for word in words:
-      if (lines[i][0] == 'Books'): 
+    if (lines[i][0] == 'Books'): 
+      words = preprocessing_words(lines[i][1])
+      for word in words:
         if (word in class_b):
           class_b[word] += 1
         else:
           class_b[word] = 1
 
-      if (lines[i][0] == 'Clothing & Accessories'):
+    if (lines[i][0] == 'Clothing & Accessories'):
+      words = preprocessing_words(lines[i][1])
+      for word in words:
         if (word in class_c):
           class_c[word] += 1
         else:
           class_c[word] = 1
 
-      if (lines[i][0] == 'Electronics'):
+    if (lines[i][0] == 'Electronics'):
+      words = preprocessing_words(lines[i][1])
+      for word in words:
         if (word in class_e):
           class_e[word] += 1
         else:
           class_e[word] = 1
 
-      if (lines[i][0] == 'Household'):
+    if (lines[i][0] == 'Household'):
+      words = preprocessing_words(lines[i][1])
+      for word in words:
         if (word in class_h):
           class_h[word] += 1
         else:
@@ -97,13 +105,15 @@ def corpus_words_number():
   writing_file('aprendizajeH.txt', text + str(total_class_h))
 
 
-def frequency_and_log_prob():
-  text = '\nPalabra: ';
-  text2 = ' Frec: ';
+def frequency_and_log_prob(voc_size):
+  text = '\nPalabra: '
+  text2 = ' Frec: '
+  text3 = ' LogProb: '
   for key in class_b:
     word = str(key)
     frec = class_b[key]
-    writing_file('aprendizajeB.txt', text + word + text2 + str(frec))
+    log = math.log((frec + 1) / (len(class_b) + voc_size))
+    writing_file('aprendizajeB.txt', text + word + text2 + str(frec) + text3 + str(log))
 
   for key in class_c:
     word = str(key)
@@ -133,6 +143,15 @@ def delete_file_content(file_name):
   file.close()
 
 
+def read_vocabulary_file(file_name):
+  new_file = open(file_name,"r")
+  words = (new_file.readline()).split()
+  vocabulary_size = int(words[3])
+  print(vocabulary_size)
+  new_file.close()
+  frequency_and_log_prob(vocabulary_size)
+
+
 def main():
   delete_file_content('aprendizajeB.txt')
   delete_file_content('aprendizajeC.txt')
@@ -143,7 +162,6 @@ def main():
   corpus_documents_number(lines)
   initialize_dictionaries(lines)
   corpus_words_number()
-  frequency_and_log_prob()
-
+  read_vocabulary_file('vocabulario.txt')
 
 main()

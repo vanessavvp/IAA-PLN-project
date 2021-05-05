@@ -18,6 +18,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 
+vocabulary_size = 0
+
 def read_and_tokenize(input_file):
   with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
     punctuation_marks = string.punctuation + '…' + '”' + '“' + '-' + '‘'+ '’' + '´' + '—'
@@ -41,7 +43,12 @@ def preprocessing_words(data):
       if (word not in en_stops):
         output_list.add(word)
   output_list = sorted(output_list)
+  vocabulary_size = len(output_list)
   return output_list
+
+
+def get_vocabulary_size():
+  return vocabulary_size
 
 
 def writing_file(output_list, vocabulary_file):
