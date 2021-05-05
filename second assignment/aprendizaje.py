@@ -23,6 +23,7 @@ total_class_c = 0
 total_class_e = 0
 total_class_h = 0
 
+
 def reading_file(input_file):
   with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
@@ -83,7 +84,6 @@ def corpus_documents_number(lines):
   writing_file('aprendizajeE.txt', text)
   writing_file('aprendizajeH.txt', text)
   
-  
 
 def corpus_words_number():
   text = 'Numero de palabras del corpus: ';
@@ -97,11 +97,19 @@ def corpus_words_number():
   writing_file('aprendizajeH.txt', text + str(total_class_h))
 
 
+def frequency_and_log_prob():
+  text = '\nPalabra: ';
+  text2 = ' Frec: ';
+  for key in class_b:
+    word = str(key)
+    frec = class_b[key]
+    writing_file('aprendizajeB.txt', text + word + text2 + str(frec))
+
 
 def writing_file(file_name, text):
   new_file = open(file_name,"at")
   new_file.write(text)
-  print("\nThe file was successfully written! into \"" + file_name + "\" file")
+  # print("\nThe file was successfully written! into \"" + file_name + "\" file")
 
 
 def delete_file_content(file_name):
@@ -120,7 +128,7 @@ def main():
   corpus_documents_number(lines)
   initialize_dictionaries(lines)
   corpus_words_number()
+  frequency_and_log_prob()
 
-  
 
 main()
