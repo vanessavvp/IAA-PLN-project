@@ -50,39 +50,24 @@ def preprocessing_words(entire_line):
   return output
 
 
+def adding_words(iteration, lines, class_to_be_added):
+  words = preprocessing_words(lines[iteration][1])
+  for word in words:
+    if (word in class_to_be_added):
+      class_to_be_added[word] += 1
+    else:
+      class_to_be_added[word] = 1
+
 def initialize_dictionaries(lines):
   for i in range(len(lines)):
-    if (lines[i][0] == 'Books'): 
-      words = preprocessing_words(lines[i][1])
-      for word in words:
-        if (word in class_b):
-          class_b[word] += 1
-        else:
-          class_b[word] = 1
-
+    if (lines[i][0] == 'Books'):
+      adding_words(i, lines, class_b)
     if (lines[i][0] == 'Clothing & Accessories'):
-      words = preprocessing_words(lines[i][1])
-      for word in words:
-        if (word in class_c):
-          class_c[word] += 1
-        else:
-          class_c[word] = 1
-
+      adding_words(i, lines, class_c)
     if (lines[i][0] == 'Electronics'):
-      words = preprocessing_words(lines[i][1])
-      for word in words:
-        if (word in class_e):
-          class_e[word] += 1
-        else:
-          class_e[word] = 1
-
+      adding_words(i, lines, class_e)
     if (lines[i][0] == 'Household'):
-      words = preprocessing_words(lines[i][1])
-      for word in words:
-        if (word in class_h):
-          class_h[word] += 1
-        else:
-          class_h[word] = 1
+      adding_words(i, lines, class_h)
 
   
 def corpus_documents_number(lines):
