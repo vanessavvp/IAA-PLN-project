@@ -26,6 +26,7 @@ total_class_e = 0
 total_class_h = 0
 
 
+
 def reading_file(input_file):
   with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
@@ -37,7 +38,7 @@ def preprocessing_words(entire_line):
   punctuation_marks = string.punctuation + '…' + '”' + '“' + '-' + '‘'+ '’' + '´' + '—'
   data = entire_line.translate(str.maketrans(dict.fromkeys(punctuation_marks, ' ')))
   en_stops = set(stopwords.words('english'))
-  output_list = set()
+  output_list = []
   single_words = data.split()
   for word in single_words:
     # Only alphabetics words will be processed
@@ -45,7 +46,7 @@ def preprocessing_words(entire_line):
       word = word.lower()
       # Stopwords will be ignored
       if (word not in en_stops):
-        output_list.add(word)
+        output_list += [word]
   output = sorted(output_list)
   return output
 
@@ -57,6 +58,7 @@ def adding_words(iteration, lines, class_to_be_added):
       class_to_be_added[word] += 1
     else:
       class_to_be_added[word] = 1
+
 
 def initialize_dictionaries(lines):
   for i in range(len(lines)):
@@ -70,13 +72,32 @@ def initialize_dictionaries(lines):
       adding_words(i, lines, class_h)
 
   
+def counting_entries(file_name, total_entries):
+  text = 'Numero de documentos del corpus: ' + str(total_entries) + '\n'
+  writing_file(file_name, text)
+ 
+
 def corpus_documents_number(lines):
-  text = 'Numero de documentos del corpus: ' + str(len(lines)) + '\n'
-  writing_file('aprendizajeB.txt', text)
-  writing_file('aprendizajeC.txt', text)
-  writing_file('aprendizajeE.txt', text)
-  writing_file('aprendizajeH.txt', text)
-  
+  entries_b = 0
+  entries_c = 0
+  entries_e = 0
+  entries_h = 0
+  # Numero de repeticiones de cada entrada en el csv, de cada clase
+  for i in range(len(lines)):
+    if (lines[i][0] == 'Books'):
+      entries_b += 1
+    if (lines[i][0] == 'Clothing & Accessories'):
+      entries_c += 1
+    if (lines[i][0] == 'Electronics'):
+      entries_e += 1
+    if (lines[i][0] == 'Household'):
+      entries_h += 1
+  counting_entries('aprendizajeB.txt', entries_b)
+  counting_entries('aprendizajeC.txt', entries_c)
+  counting_entries('aprendizajeE.txt', entries_e)
+  counting_entries('aprendizajeH.txt', entries_h)
+
+
 
 def corpus_words_number():
   text = 'Numero de palabras del corpus: ';
@@ -90,39 +111,28 @@ def corpus_words_number():
   writing_file('aprendizajeH.txt', text + str(total_class_h))
 
 
-def frequency_and_log_prob(voc_size):
+def print_frec_log(file_name, words_class, voc_size, total_words):
   text = '\nPalabra: '
   text2 = ' Frec: '
   text3 = ' LogProb: '
-  for key in sorted(class_b):
-    word = str(key)
-    frec = class_b[key]
-    log = math.log((frec + 1) / (len(class_b) + voc_size))
-    writing_file('aprendizajeB.txt', text + word + text2 + str(frec) + text3 + str(log))
+  for key in total_words:
+    key = key.rstrip('\n')
+    word = key
+    frec = words_class[key] if key in words_class else 0
+    log = math.log((frec + 1) / (len(words_class) + voc_size))
+    writing_file(file_name, text + word + text2 + str(frec) + text3 + str(log))
 
-  for key in sorted(class_c):
-    word = str(key)
-    frec = class_c[key]
-    log = math.log((frec + 1) / (len(class_c) + voc_size))
-    writing_file('aprendizajeC.txt', text + word + text2 + str(frec) + text3 + str(log))
 
-  for key in sorted(class_e):
-    word = str(key)
-    frec = class_e[key]
-    log = math.log((frec + 1) / (len(class_e) + voc_size))
-    writing_file('aprendizajeE.txt', text + word + text2 + str(frec) + text3 + str(log))
-
-  for key in sorted(class_h):
-    word = str(key)
-    frec = class_h[key]
-    log = math.log((frec + 1) / (len(class_h) + voc_size))
-    writing_file('aprendizajeH.txt', text + word + text2 + str(frec) + text3 + str(log))
+def frequency_and_log_prob(voc_size, words):
+  print_frec_log('aprendizajeB.txt', class_b, voc_size, words)
+  print_frec_log('aprendizajeC.txt', class_c, voc_size, words)
+  print_frec_log('aprendizajeE.txt', class_e, voc_size, words)
+  print_frec_log('aprendizajeH.txt', class_h, voc_size, words)
 
 
 def writing_file(file_name, text):
   new_file = open(file_name,"at")
   new_file.write(text)
-  # print("\nThe file was successfully written! into \"" + file_name + "\" file")
 
 
 def delete_file_content(file_name):
@@ -135,8 +145,9 @@ def read_vocabulary_file(file_name):
   new_file = open(file_name,"r")
   words = (new_file.readline()).split()
   vocabulary_size = int(words[3])
+  total_words = new_file.readlines()
   new_file.close()
-  frequency_and_log_prob(vocabulary_size)
+  frequency_and_log_prob(vocabulary_size, total_words)
 
 
 def main():
