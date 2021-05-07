@@ -51,13 +51,21 @@ def get_vocabulary_size():
   return vocabulary_size
 
 
+def delete_file_content(file_name):
+  file = open(file_name, 'r+')
+  file.truncate(0)
+  file.close()
+
+
 def writing_file(output_list, vocabulary_file):
+  output_list.append('<UNK>')
+  delete_file_content(vocabulary_file)
   total_words = len(output_list)
   new_file = open(vocabulary_file,"wt")
   new_file.write("Número de palabras: " + str(total_words) + "\n")
   for word in output_list:
     new_file.write(word + "\n")
-  print("The file was successfully written! into \"" + vocabulary_file + "\" file")
+  # print("The file was successfully written! into \"" + vocabulary_file + "\" file")
 
 
 def main():

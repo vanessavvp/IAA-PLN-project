@@ -16,6 +16,7 @@ import string
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import vocabulario
 
 
 class_b, class_c, class_e, class_h = {}, {}, {}, {}
@@ -24,7 +25,12 @@ total_class_b = 0
 total_class_c = 0
 total_class_e = 0
 total_class_h = 0
-
+unk_added = False
+total_words = []
+entries_b = 0
+entries_c = 0
+entries_e = 0
+entries_h = 0
 
 
 def reading_file(input_file):
@@ -54,7 +60,7 @@ def preprocessing_words(entire_line):
 def adding_words(iteration, lines, class_to_be_added):
   words = preprocessing_words(lines[iteration][1])
   for word in words:
-    if (word in class_to_be_added):
+    if word in class_to_be_added:
       class_to_be_added[word] += 1
     else:
       class_to_be_added[word] = 1
@@ -74,14 +80,11 @@ def initialize_dictionaries(lines):
   
 def counting_entries(file_name, total_entries):
   text = 'Numero de documentos del corpus: ' + str(total_entries) + '\n'
-  writing_file(file_name, text)
+  write_file(file_name, text)
  
 
 def corpus_documents_number(lines):
-  entries_b = 0
-  entries_c = 0
-  entries_e = 0
-  entries_h = 0
+  global entries_b, entries_c, entries_e, entries_h
   # Numero de repeticiones de cada entrada en el csv, de cada clase
   for i in range(len(lines)):
     if (lines[i][0] == 'Books'):
@@ -98,20 +101,19 @@ def corpus_documents_number(lines):
   counting_entries('aprendizajeH.txt', entries_h)
 
 
-
 def corpus_words_number():
   text = 'Numero de palabras del corpus: ';
   total_class_b = sum(class_b.values()) 
   total_class_c = sum(class_c.values())
   total_class_e = sum(class_e.values())
   total_class_h = sum(class_h.values())
-  writing_file('aprendizajeB.txt', text + str(total_class_b))
-  writing_file('aprendizajeC.txt', text + str(total_class_c))
-  writing_file('aprendizajeE.txt', text + str(total_class_e))
-  writing_file('aprendizajeH.txt', text + str(total_class_h))
+  write_file('aprendizajeB.txt', text + str(total_class_b))
+  write_file('aprendizajeC.txt', text + str(total_class_c))
+  write_file('aprendizajeE.txt', text + str(total_class_e))
+  write_file('aprendizajeH.txt', text + str(total_class_h))
 
 
-def print_frec_log(file_name, words_class, voc_size, total_words):
+def print_frec_log(file_name, words_class):
   text = '\nPalabra: '
   text2 = ' Frec: '
   text3 = ' LogProb: '
@@ -119,47 +121,43 @@ def print_frec_log(file_name, words_class, voc_size, total_words):
     key = key.rstrip('\n')
     word = key
     frec = words_class[key] if key in words_class else 0
-    log = math.log((frec + 1) / (len(words_class) + voc_size))
-    writing_file(file_name, text + word + text2 + str(frec) + text3 + str(log))
+    log = math.log((frec + 1) / (len(words_class) + vocabulary_size))
+    write_file(file_name, text + word + text2 + str(frec) + text3 + str(log))
 
 
-def frequency_and_log_prob(voc_size, words):
-  print_frec_log('aprendizajeB.txt', class_b, voc_size, words)
-  print_frec_log('aprendizajeC.txt', class_c, voc_size, words)
-  print_frec_log('aprendizajeE.txt', class_e, voc_size, words)
-  print_frec_log('aprendizajeH.txt', class_h, voc_size, words)
+def frequency_and_log_prob():
+  print_frec_log('aprendizajeB.txt', class_b)
+  print_frec_log('aprendizajeC.txt', class_c)
+  print_frec_log('aprendizajeE.txt', class_e)
+  print_frec_log('aprendizajeH.txt', class_h)
 
 
-def writing_file(file_name, text):
+def write_file(file_name, text):
   new_file = open(file_name,"at")
   new_file.write(text)
 
 
-def delete_file_content(file_name):
-  file = open(file_name, 'r+')
-  file.truncate(0)
-  file.close()
-
-
 def read_vocabulary_file(file_name):
+  global total_words, vocabulary_size
   new_file = open(file_name,"r")
   words = (new_file.readline()).split()
   vocabulary_size = int(words[3])
   total_words = new_file.readlines()
   new_file.close()
-  frequency_and_log_prob(vocabulary_size, total_words)
 
 
 def main():
-  delete_file_content('aprendizajeB.txt')
-  delete_file_content('aprendizajeC.txt')
-  delete_file_content('aprendizajeE.txt')
-  delete_file_content('aprendizajeH.txt')
+  vocabulario.delete_file_content('aprendizajeB.txt')
+  vocabulario.delete_file_content('aprendizajeC.txt')
+  vocabulario.delete_file_content('aprendizajeE.txt')
+  vocabulario.delete_file_content('aprendizajeH.txt')
   file = 'ecom-train.csv'
   lines = reading_file(file)
+  read_vocabulary_file('vocabulario.txt')
   corpus_documents_number(lines)
   initialize_dictionaries(lines)
   corpus_words_number()
-  read_vocabulary_file('vocabulario.txt')
+  frequency_and_log_prob()
+
 
 main()
