@@ -32,6 +32,19 @@ test_file = ''
 solution = []
 
 
+def reading_file(input_file):
+  with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    lines = []
+    for line in csv_reader:
+      if line:
+        lines.append(line)
+      else:
+        line.append(' ')
+        lines.append(line)
+    return lines
+
+
 def write_csv_file(file_name, info_list):
   with open(file_name, 'at', newline = '') as csv_file:
     writer = csv.writer(csv_file)
@@ -79,7 +92,7 @@ def request_file_code():
   input_code = input('Introduce code: ')
   text = 'codigo: ' + input_code
   f = open(summary_file, 'w')
-  f.write(text)
+  f.write(text + "\n")
   f.close()
   
 
@@ -133,7 +146,7 @@ def main():
   fav_cases_h = cut_favorable_cases('aprendizajeH.txt', fav_cases_h)
   total_cases = fav_cases_b + fav_cases_c + fav_cases_e + fav_cases_h
   request_file_code()
-  lines = aprendizaje.reading_file(test_file)
+  lines = reading_file(test_file)
   log(lines)
 
   
