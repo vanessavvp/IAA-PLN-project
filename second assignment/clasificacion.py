@@ -33,7 +33,7 @@ solution = []
 
 
 def write_csv_file(file_name, info_list):
-  with open(file_name, 'w', newline = '') as csv_file:
+  with open(file_name, 'at', newline = '') as csv_file:
     writer = csv.writer(csv_file)
     writer.writerows(info_list)
 
@@ -63,7 +63,6 @@ def log(lines):
     solution[i].append(log_b)
     solution[i].append(log_c)
     solution[i].append(log_e)
-    print(logs_value)
 
     # Choosing the best log prob
     best_value_key = max(logs_value.keys(), key=(lambda k: logs_value[k]))
@@ -74,12 +73,14 @@ def log(lines):
 
 
 def request_file_code():
-  global test_file, input_code
+  global test_file, input_code, summary_file
   global solution_summary
   test_file = input('Introduce test file: ')
   input_code = input('Introduce code: ')
-  text = 'codigo: ' + str(input_code)
-  solution_summary += [text]
+  text = 'codigo: ' + input_code
+  f = open(summary_file, 'w')
+  f.write(text)
+  f.close()
   
 
 def calculate_log_sentences(words, learning, fav_cases):
@@ -89,6 +90,8 @@ def calculate_log_sentences(words, learning, fav_cases):
   for word in words:
     if word in learning:
       sentence_log += learning[word]
+    else:
+      sentence_log += learning["<UNK>"]
   class_log_prob = math.log(fav_cases / total_cases)
   total_log_sentence = sentence_log + class_log_prob
   return round(total_log_sentence, 2)
@@ -117,7 +120,9 @@ def cut_favorable_cases(file_name, fav_cases):
 def main():
   global fav_cases_b, fav_cases_c, fav_cases_e, fav_cases_h, total_cases
   global learning_b, learning_c, learning_e, learning_h
-  global test_file
+  global test_file, clasification_file, summary_file
+  vocabulario.delete_file_content(clasification_file)
+  vocabulario.delete_file_content(summary_file)
   learning_b = cut_word_and_log('aprendizajeB.txt', learning_b)
   learning_c = cut_word_and_log('aprendizajeC.txt', learning_c)
   learning_e = cut_word_and_log('aprendizajeE.txt', learning_e)
@@ -130,11 +135,6 @@ def main():
   request_file_code()
   lines = aprendizaje.reading_file(test_file)
   log(lines)
-  # find_log_word(lines, clasification_file)
-  # vocabulario.delete_file_content(file_name)
-  # write_csv_file(file_name)
+
   
-
-
-
 main()

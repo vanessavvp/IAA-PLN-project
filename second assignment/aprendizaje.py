@@ -36,7 +36,10 @@ entries_h = 0
 def reading_file(input_file):
   with open(input_file, "r", encoding = 'utf-8-sig') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
-    lines = list(csv_reader)
+    lines = []
+    for line in csv_reader:
+      if line:
+        lines.append(line)
     return lines
     
 
