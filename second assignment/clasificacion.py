@@ -14,6 +14,10 @@ import vocabulario
 import aprendizaje
 
 
+clasification_file = 'clasificacion_alu0101265704.csv'
+summary_file = 'resumen_alu0101265704.csv'
+solution_summary = []
+logs_value = {}
 learning_b = {}
 learning_c = {}
 learning_e = {}
@@ -23,51 +27,72 @@ fav_cases_c = 0
 fav_cases_e = 0
 fav_cases_h = 0
 total_cases = 0
-best_log = 0
+input_code = 0
+test_file = ''
+solution = []
 
 
-def write_csv_file(file_name):
+def write_csv_file(file_name, info_list):
   with open(file_name, 'w', newline = '') as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow(['Descripcion', 'lPd en H', 'lPd en B', 'lPd en C', 'lPd en H', 'HBC o E'])
+    writer.writerows(info_list)
 
 
-def find_log_word(lines):
-  global total_cases, learning_b, learning_c, learning_e, learning_h
-  string_log = 0.0
+def log(lines):
+  global learning_h, learning_b, learning_c, learning_e
+  global fav_cases_h, fav_cases_b, fav_cases_c, fav_cases_e
+  global solution, solution_summary
   for i in range(len(lines)):
+    # Adding description to the clasification file
+    aux = []
     words = aprendizaje.preprocessing_words(lines[i][0])
-    for word in words:
-      if word in learning_b:
-        string_log += learning_b[word]
-      elif word in learning_c:
-        string_log += learning_c[word]
-      elif word in learning_e:
-        string_log += learning_e[word]
-      elif word in learning_h:
-        string_log += learning_h[word]
-    best_log = choose_best_log(string_log)
-  print(best_log)
+    description = ' '.join(words)
+    aux.append(description)
+    solution.append(aux)
+
+    # Calculating log probs for each learning dictionary 
+    log_h = calculate_log_sentences(words, learning_h, fav_cases_h)
+    logs_value['H'] = log_h
+    log_b = calculate_log_sentences(words, learning_b, fav_cases_b)
+    logs_value['B'] = log_b
+    log_c = calculate_log_sentences(words, learning_c, fav_cases_c)
+    logs_value['C'] = log_c
+    log_e = calculate_log_sentences(words, learning_e, fav_cases_e)
+    logs_value['E'] = log_e
+    solution[i].append(log_h)
+    solution[i].append(log_b)
+    solution[i].append(log_c)
+    solution[i].append(log_e)
+    print(logs_value)
+
+    # Choosing the best log prob
+    best_value_key = max(logs_value.keys(), key=(lambda k: logs_value[k]))
+    solution[i].append(str(best_value_key))
+    solution_summary.append(str(best_value_key))
+  write_csv_file(clasification_file, solution)
+  write_csv_file(summary_file, solution_summary)
 
 
-def choose_best_log(string_log):
-  global learning_b, learning_c, learning_e, learning_h, best_log
-  global total_cases, fav_cases_b, fav_cases_c, fav_cases_e, fav_cases_h
-  bests_logs = []
-  prob_b = fav_cases_b/total_cases
-  prob_c = fav_cases_c/total_cases
-  prob_e = fav_cases_e/total_cases
-  prob_h = fav_cases_h/total_cases
-  log_b = math.log(prob_b) + string_log
-  log_c = math.log(prob_c) + string_log
-  log_e = math.log(prob_e) + string_log
-  log_h = math.log(prob_h) + string_log
-  bests_logs.append(log_b)
-  bests_logs.append(log_c)
-  bests_logs.append(log_e)
-  bests_logs.append(log_h)
-  bests_logs.sort(reverse = True)
-  return bests_logs[0]
+def request_file_code():
+  global test_file, input_code
+  global solution_summary
+  test_file = input('Introduce test file: ')
+  input_code = input('Introduce code: ')
+  text = 'codigo: ' + str(input_code)
+  solution_summary += [text]
+  
+
+def calculate_log_sentences(words, learning, fav_cases):
+  # Adds the logarithm of the probability for each of the words in a specific class
+  global total_cases
+  sentence_log = 0.0
+  for word in words:
+    if word in learning:
+      sentence_log += learning[word]
+  class_log_prob = math.log(fav_cases / total_cases)
+  total_log_sentence = sentence_log + class_log_prob
+  return round(total_log_sentence, 2)
+
 
 def cut_word_and_log(file_name, learning):
   file = open(file_name, 'r')
@@ -81,7 +106,7 @@ def cut_word_and_log(file_name, learning):
   return learning
 
 
-def calculate_favorable_cases(file_name, fav_cases):
+def cut_favorable_cases(file_name, fav_cases):
   file = open(file_name, 'r')
   first_line = (file.readline()).split()
   fav_cases = first_line[5]
@@ -92,18 +117,20 @@ def calculate_favorable_cases(file_name, fav_cases):
 def main():
   global fav_cases_b, fav_cases_c, fav_cases_e, fav_cases_h, total_cases
   global learning_b, learning_c, learning_e, learning_h
-  clasification_file = 'clasificacion_alu0101265704.csv'
+  global test_file
   learning_b = cut_word_and_log('aprendizajeB.txt', learning_b)
   learning_c = cut_word_and_log('aprendizajeC.txt', learning_c)
   learning_e = cut_word_and_log('aprendizajeE.txt', learning_e)
   learning_h = cut_word_and_log('aprendizajeH.txt', learning_h)
-  fav_cases_b = calculate_favorable_cases('aprendizajeB.txt', fav_cases_b)
-  fav_cases_c = calculate_favorable_cases('aprendizajeC.txt', fav_cases_c)
-  fav_cases_e = calculate_favorable_cases('aprendizajeE.txt', fav_cases_e)
-  fav_cases_h = calculate_favorable_cases('aprendizajeH.txt', fav_cases_h)
+  fav_cases_b = cut_favorable_cases('aprendizajeB.txt', fav_cases_b)
+  fav_cases_c = cut_favorable_cases('aprendizajeC.txt', fav_cases_c)
+  fav_cases_e = cut_favorable_cases('aprendizajeE.txt', fav_cases_e)
+  fav_cases_h = cut_favorable_cases('aprendizajeH.txt', fav_cases_h)
   total_cases = fav_cases_b + fav_cases_c + fav_cases_e + fav_cases_h
-  lines = aprendizaje.reading_file('copy.csv')
-  find_log_word(lines)
+  request_file_code()
+  lines = aprendizaje.reading_file(test_file)
+  log(lines)
+  # find_log_word(lines, clasification_file)
   # vocabulario.delete_file_content(file_name)
   # write_csv_file(file_name)
   
