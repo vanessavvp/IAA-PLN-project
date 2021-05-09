@@ -33,6 +33,7 @@ def read_and_tokenize(input_file):
 
 
 def preprocessing_words(data):
+  global vocabulary_size
   en_stops = set(stopwords.words('english'))
   output_list = set()
   for word in data:
@@ -48,6 +49,7 @@ def preprocessing_words(data):
 
 
 def get_vocabulary_size():
+  global vocabulary_size
   return vocabulary_size
 
 

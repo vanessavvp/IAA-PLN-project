@@ -102,7 +102,7 @@ def corpus_documents_number(lines):
 
 
 def corpus_words_number():
-  text = 'Numero de palabras del corpus: ';
+  text = 'Numero de palabras del corpus: '
   total_class_b = sum(class_b.values()) 
   total_class_c = sum(class_c.values())
   total_class_e = sum(class_e.values())
