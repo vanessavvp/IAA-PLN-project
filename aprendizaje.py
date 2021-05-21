@@ -5,7 +5,6 @@ Created on Wednesday May 5, 2021
 @author: Vanessa Valentina Villalba Pérez
 Natural language processing project PLN 2º part
 """
-import re
 import csv
 import math
 import nltk

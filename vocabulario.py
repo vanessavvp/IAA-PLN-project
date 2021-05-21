@@ -6,7 +6,6 @@ Created on Thursday April 22, 2021
 Natural language processing project PLN 1º part
 
 """
-import re
 import csv
 import nltk
 import string
